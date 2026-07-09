@@ -197,6 +197,15 @@ def extract_workspace_id_from_local_dbs(gemini_dir):
             except Exception:
                 pass
     return None
+def normalize_uri(uri):
+    unquoted = urllib.parse.unquote(uri).lower().replace('\\', '/')
+    if unquoted.endswith('/'):
+        unquoted = unquoted[:-1]
+    if unquoted.startswith('file:///'):
+        unquoted = unquoted[8:]
+    elif unquoted.startswith('file:'):
+        unquoted = unquoted[5:]
+    return unquoted
 
 def find_workspace_id_fallback(config_dir, project_uri):
     # Procura na pasta workspaceStorage o workspace.json que bate com o URI
@@ -204,8 +213,10 @@ def find_workspace_id_fallback(config_dir, project_uri):
     # Antigravity IDE ou Antigravity normal
     storage_candidates = [
         os.path.join(home, "AppData", "Roaming", "Antigravity IDE", "User", "workspaceStorage"),
+        os.path.join(home, "AppData", "Roaming", "Antigravity", "User", "workspaceStorage"),
         os.path.join(home, "AppData", "Roaming", "antigravity", "User", "workspaceStorage"),
     ]
+    norm_project_uri = normalize_uri(project_uri)
     for storage_dir in storage_candidates:
         if os.path.isdir(storage_dir):
             for name in os.listdir(storage_dir):
@@ -215,11 +226,12 @@ def find_workspace_id_fallback(config_dir, project_uri):
                         with open(ws_json, "r", encoding="utf-8") as f:
                             data = json.load(f)
                         folder = data.get("folder") or data.get("workspace")
-                        if folder and project_uri.lower() in folder.lower():
+                        if folder and norm_project_uri in normalize_uri(folder):
                             return name
                     except Exception:
                         pass
     return None
+
 
 # --- Processamento de Conversa ---
 def translate_db_file(db_path, translations):
