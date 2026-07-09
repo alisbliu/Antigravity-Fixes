@@ -177,7 +177,13 @@ def extract_workspace_id_from_local_dbs(gemini_dir):
     if not os.path.isdir(convs_dir):
         return None
         
-    for filename in os.listdir(convs_dir):
+    try:
+        files = [f for f in os.listdir(convs_dir) if f.endswith(".db") and not f.endswith(("-shm", "-wal"))]
+        files.sort(key=lambda f: os.path.getmtime(os.path.join(convs_dir, f)), reverse=True)
+    except Exception:
+        files = os.listdir(convs_dir)
+        
+    for filename in files:
         if filename.endswith(".db") and not filename.endswith(("-shm", "-wal")):
             db_path = os.path.join(convs_dir, filename)
             try:
@@ -277,6 +283,8 @@ def translate_db_file(db_path, translations):
         return True
     except Exception as e:
         print(f"  x Erro ao traduzir banco {os.path.basename(db_path)}: {e}")
+        if "locked" in str(e).lower() or "read-only" in str(e).lower():
+            print("    DICA: Certifique-se de que a IDE Antigravity esteja completamente fechada para evitar bloqueios no banco de dados.")
         return False
 
 # --- Fluxo Principal ---
