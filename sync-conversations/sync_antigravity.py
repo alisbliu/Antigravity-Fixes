@@ -161,7 +161,7 @@ def find_obsidian_project(config_dir):
                             "path": local_path
                         }
                     # 2. Fallback por nome na URI
-                    if "obsidian-personal-vault" in uri.lower() or "cofre%20eduardo" in uri.lower():
+                    if "obsidian-personal-vault" in uri.lower():
                         return {
                             "id": data.get("id"),
                             "name": data.get("name"),
@@ -370,8 +370,8 @@ def main():
         candidates = [
             os.path.join(home, "antigravity-backup"),
             os.path.join(home, ".gemini", "antigravity", "scratch", "antigravity-backup"),
-            os.path.join("C:\\Users\\Eduardo Barbosa", "antigravity-backup"),
-            os.path.join("E:\\Cofre Eduardo (Obsidian)", "antigravity-backup")
+            os.path.join(home, "Documents", "antigravity-backup"),
+            os.path.join(home, "Desktop", "antigravity-backup")
         ]
         for c in candidates:
             if os.path.isdir(c):

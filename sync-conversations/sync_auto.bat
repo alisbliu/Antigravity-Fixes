@@ -3,8 +3,7 @@ setlocal enabledelayedexpansion
 
 :: 1. Localiza a pasta do repositorio antigravity-backup
 set "BACKUP_DIR="
-if exist "C:\Users\Eduardo Barbosa\antigravity-backup" set "BACKUP_DIR=C:\Users\Eduardo Barbosa\antigravity-backup"
-if not defined BACKUP_DIR if exist "%USERPROFILE%\antigravity-backup" set "BACKUP_DIR=%USERPROFILE%\antigravity-backup"
+if exist "%USERPROFILE%\antigravity-backup" set "BACKUP_DIR=%USERPROFILE%\antigravity-backup"
 if not defined BACKUP_DIR if exist "%~dp0..\..\..\scratch\antigravity-backup" set "BACKUP_DIR=%~dp0..\..\..\scratch\antigravity-backup"
 
 if not defined BACKUP_DIR (

@@ -9,7 +9,7 @@ Este utilitário resolve o problema de divergência e falta de sincronismo do hi
 O Antigravity 2.0 gerencia as conversas localmente no sistema usando arquivos de banco de dados SQLite (`.db`) e arquivos serializados Protobuf (`.pb`) dentro da pasta de dados da aplicação (`%USERPROFILE%\.gemini\antigravity\conversations\`). 
 
 Cada conversa possui metadados internos gravados na tabela `trajectory_metadata_blob` que a vinculam de forma rígida a:
-1. **URI do Workspace:** O caminho local da pasta aberta na IDE (ex: `file:///C:/Users/Eduardo/Documents/obsidian-personal-vault` ou `file:///E:/Cofre%20Eduardo%20%28Obsidian%29`).
+1. **URI do Workspace:** O caminho local da pasta aberta na IDE (ex: `file:///C:/Users/Seu-Usuario/Documents/Pasta-De-Exemplo` ou `file:///D:/Pasta-Do-Repositorio`).
 2. **ID do Projeto (Project ID):** O UUID interno gerado pela IDE para aquele workspace (ex: `d90b1c26-...` ou `e1d2e2cc-...`).
 3. **ID do Workspace (Workspace ID):** O identificador único de cache da IDE.
 
@@ -25,7 +25,7 @@ Desenvolvemos um fluxo de sincronização bidirecional, transparente e agnóstic
 
 1. **Ao Exportar (`--push`):** 
    O script lê os bancos de dados locais das conversas, decodifica a estrutura Protobuf de metadados, e substitui todas as informações específicas do computador por placeholders neutros:
-   * `file:///E:/Cofre...` ➔ `{{WORKSPACE_URI}}`
+   * `file:///D:/Pasta-Do-Repositorio...` ➔ `{{WORKSPACE_URI}}`
    * `e1d2e2cc-...` ➔ `{{PROJECT_ID}}`
    * `fe29abba-...` ➔ `{{WORKSPACE_ID}}`
    Em seguida, copia esses arquivos normalizados para a pasta do repositório de backup.
