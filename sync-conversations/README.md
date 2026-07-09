@@ -44,6 +44,7 @@ Desenvolvemos um fluxo de sincronização bidirecional, transparente e agnóstic
 * **`repair_sqlite_robust.py`**: Salva bancos de dados corrompidos fazendo a cópia tabela por tabela e linha por linha, ignorando registros fisicamente malformados.
 * **`move_all_unsupported_dbs.py`**: Detecta e isola automaticamente na pasta `scratch/unsupported_dbs/` qualquer banco de dados que contenha tipos de passos incompatíveis de versões mais novas da IDE.
 * **`clean_backup_repo.py`**: Limpa permanentemente do repositório Git de backup as conversas incompatíveis para que elas não sejam puxadas e causem crash de port/reloading nas IDEs de versões anteriores.
+* **`delete_empty_conversations.py`**: Varre as conversas locais, identifica bancos vazios (com 0 passos) criados por inicializações parciais ou falhas da IDE e os deleta fisicamente para limpar a barra lateral (deve ser executado com a IDE fechada para evitar bloqueios de arquivo).
 
 ---
 
