@@ -39,7 +39,37 @@ Desenvolvemos um fluxo de sincronização bidirecional, transparente e agnóstic
 
 * **`sync_antigravity.py`**: O script core em Python que realiza a decodificação/codificação genérica dos blobs Protobuf e atualiza as referências locais e placeholders.
 * **`sync_auto.bat`**: Script Batch do Windows que coordena o fluxo git e as execuções de pull/push do Python de forma integrada.
-* **`sync_silent.vbs`**: Script VBScript para executar o `.bat` em segundo plano de forma 100% silenciosa (invisível, sem abrir a janela preta do CMD).
+* **`sync_silent.vbs`**: Script VBScript para executar o `.bat` de forma oculta e silenciosa.
+* **`restore_and_fix.py`**: Restaura os bancos `.db` da pasta de backup local e atualiza os metadados (Project ID, Workspace ID) para a máquina atual.
+* **`repair_sqlite_robust.py`**: Salva bancos de dados corrompidos fazendo a cópia tabela por tabela e linha por linha, ignorando registros fisicamente malformados.
+* **`move_all_unsupported_dbs.py`**: Detecta e isola automaticamente na pasta `scratch/unsupported_dbs/` qualquer banco de dados que contenha tipos de passos incompatíveis de versões mais novas da IDE.
+* **`clean_backup_repo.py`**: Limpa permanentemente do repositório Git de backup as conversas incompatíveis para que elas não sejam puxadas e causem crash de port/reloading nas IDEs de versões anteriores.
+
+---
+
+## ⚡ Tratamento de Crash / Reloading (Incompatibilidade de Versões)
+
+Ao sincronizar conversas de uma IDE mais nova (ex: v2.2.1 no Notebook) para uma IDE mais antiga (ex: v2.0.6 no PC pessoal), a IDE antiga pode entrar em um **loop de crash e recarregamento da janela** (voltando para a tela inicial "nil conversation").
+
+### Por que isso acontece?
+1. O Language Server tenta varrer o histórico das conversas na inicialização ou no refresh.
+2. Ao encontrar tipos de passos novos/desconhecidos criados por versões novas da IDE ou por agentes específicos (como tipos de passos `31, 33, 38, 90, 91, 138`), a versão antiga do servidor de linguagem falha ao deserializar e causa pânico (`nil pointer dereference` na chamada de `StepHeader.Type()`).
+3. O processo cai, o Electron reinicia o servidor em outra porta e força o recarregamento da tela.
+
+### Como resolver?
+1. **Isolar os bancos locais incompatíveis:**
+   Feche a IDE e execute o script:
+   ```bash
+   python move_all_unsupported_dbs.py
+   ```
+   *Isso moverá as conversas incompatíveis para a pasta `scratch/unsupported_dbs/` e atualizará o índice `agyhub_summaries_proto.pb` para a IDE rodar limpa e estável.*
+   
+2. **Limpar o repositório de backup:**
+   Para evitar que o sincronizador traga as conversas com passos incompatíveis de volta na próxima execução, rode:
+   ```bash
+   python clean_backup_repo.py
+   ```
+   *Isso deletará as conversas incompatíveis do repositório git local e remoto.*
 
 ---
 
