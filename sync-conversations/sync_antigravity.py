@@ -119,6 +119,20 @@ def get_local_antigravity_paths():
     config_dir = os.path.join(home, ".gemini", "config")
     return gemini_dir, config_dir
 
+def check_git_remote(path):
+    config_path = os.path.join(path, ".git", "config")
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "r", encoding="utf-8", errors="ignore") as f:
+                content = f.read()
+            remotes = re.findall(r"url\s*=\s*(.*)", content)
+            for r in remotes:
+                if "obsidian-personal-vault" in r.lower():
+                    return True
+        except Exception:
+            pass
+    return False
+
 def find_obsidian_project(config_dir):
     projects_dir = os.path.join(config_dir, "projects")
     if not os.path.isdir(projects_dir):
@@ -133,13 +147,26 @@ def find_obsidian_project(config_dir):
                 resources = data.get("projectResources", {}).get("resources", [])
                 if resources:
                     uri = resources[0].get("gitFolder", {}).get("folderUri", "")
-                    # Identifica se é o projeto do vault do obsidian
+                    local_path = urllib.parse.unquote(uri.replace("file:///", ""))
+                    # Tratamento Windows drive letter
+                    if len(local_path) >= 3 and local_path[1] == ':' and local_path[0] == '/':
+                        local_path = local_path[1:]
+                    
+                    # 1. Tenta identificar via Git Remote
+                    if check_git_remote(local_path) or check_git_remote(os.path.dirname(local_path)):
+                        return {
+                            "id": data.get("id"),
+                            "name": data.get("name"),
+                            "uri": uri,
+                            "path": local_path
+                        }
+                    # 2. Fallback por nome na URI
                     if "obsidian-personal-vault" in uri.lower() or "cofre%20eduardo" in uri.lower():
                         return {
                             "id": data.get("id"),
                             "name": data.get("name"),
                             "uri": uri,
-                            "path": urllib.parse.unquote(uri.replace("file:///", ""))
+                            "path": local_path
                         }
             except Exception:
                 pass
