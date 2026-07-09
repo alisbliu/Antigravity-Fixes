@@ -13,6 +13,7 @@ Atualmente, o repositório conta com as seguintes correções prontas para uso:
 | Correção / Pasta | Descrição | Tecnologia |
 | :--- | :--- | :--- |
 | 🔄 **[rebuild-conversations](./rebuild-conversations/)** | Restaura o histórico de conversas antigas ("Past Conversations" ou "Search all convos") que desaparecem misteriosamente devido a sobregravações no banco de dados SQLite (`state.vscdb`) da IDE. | Python / Windows Batch |
+| 🔄 **[sync-conversations](./sync-conversations/)** | Sincroniza automaticamente o histórico de conversas do Antigravity 2.0 entre computadores diferentes usando placeholders universais e Git. | Python / VBScript / Batch |
 | 🐛 **[github-pr-extension-patch](./github-pr-extension-patch/)** | Corrige o crash e a falha na ativação da extensão oficial **GitHub Pull Requests & Issues** na IDE Antigravity, contornando a incompatibilidade do tipo `MarkdownString` e APIs de Chat propostas. | Node.js |
 
 ---
